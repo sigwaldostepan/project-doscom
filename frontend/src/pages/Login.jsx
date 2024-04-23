@@ -22,7 +22,7 @@ const Login = () => {
         <div className="h-screen flex flex-col items-center justify-center">
           <div className="w-full max-w-[450px] flex flex-col items-center justify-center gap-2">
             <div className="p-4 flex flex-col items-center justify-center">
-              <h2 className="font-bold text-2xl">Login</h2>
+              <h2 className="font-black text-3xl">Login</h2>
               <p className="mt-2">Write, discuss, learn.</p>
             </div>
             <form
@@ -68,7 +68,7 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </label>
-              <Button type={"submit"} message={"Login"} />
+              <Button type={"submit"} width={"w-full"} message={"Login"} />
             </form>
             <p>
               Don't have account?{" "}

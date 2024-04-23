@@ -22,7 +22,7 @@ const Register = () => {
         <div className="h-screen flex items-center justify-center">
           <div className="w-full max-w-[450px] flex flex-col items-center justify-center gap-2">
             <div className="p-4 flex flex-col items-center justify-center">
-              <h2 className="font-bold text-2xl">Register</h2>
+              <h2 className="font-bold text-3xl">Register</h2>
               <p className="mt-2">
                 Join the conversation & explore deeper knowledge.
               </p>
@@ -87,7 +87,7 @@ const Register = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </label>
-              <Button type={"submit"} message={"Register"} />
+              <Button type={"submit"} width={"w-full"} message={"Register"} />
             </form>
             <p>
               Registered already?{" "}
