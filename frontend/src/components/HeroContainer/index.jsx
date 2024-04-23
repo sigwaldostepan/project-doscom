@@ -15,10 +15,10 @@ const HeroContent = ({ img, title, description }) => {
       onMouseEnter={handleOverlay}
       onMouseLeave={handleOverlay}
     >
-      <div className="img relative mt-12">
+      <div className="relative shadow-md mt-12 cursor-pointer">
         <img
           src={img}
-          className="min-w-[300px] max-w-[300px] min-h-[300px] max-h-[300px] aspect-square object-cover rounded-md shadow-3xl"
+          className="min-w-[300px] max-w-[300px] min-h-[300px] max-h-[300px] aspect-square object-cover rounded-md"
         />
         <div
           className={`absolute ${
@@ -27,7 +27,7 @@ const HeroContent = ({ img, title, description }) => {
         ></div>
       </div>
       <div>
-        <Link to={"/post/:title"}>
+        <Link to={"/post/2342"}>
           <h1 className="text-5xl font-bold">{title}</h1>
         </Link>
         <p className="py-6">{description}</p>
