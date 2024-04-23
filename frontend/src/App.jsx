@@ -10,6 +10,8 @@ import Navbar from "./components/Navbar/index.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Home from "./pages/Home.jsx";
+import Post from "./pages/Post.jsx";
+import CreatePost from "./pages/CreatePost.jsx";
 
 const Layout = () => {
   return (
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/post/:title",
+        element: <Post />,
+      },
+      {
+        path: "/write/",
+        element: <CreatePost />,
       },
     ],
   },
