@@ -4,12 +4,30 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [inputs, setInput] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
-  const handleSubmit = (event) => {
+  const handleChange = (e) => {
+    setInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({ email, password });
+
+    try {
+      const user = await axiosInstance.post("/auth/login", {
+        username: inputs.username,
+        email: inputs.email,
+        password: inputs.password,
+      });
+
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {

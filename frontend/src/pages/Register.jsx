@@ -1,15 +1,35 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { useEffect, useState } from "react";
+import { axiosInstance } from "../lib/axiosInstance";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [inputs, setInput] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
-  const handleSubmit = (event) => {
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({ username, email, password });
+
+    try {
+      const user = await axiosInstance.post("/auth/register", {
+        username: inputs.username,
+        email: inputs.email,
+        password: inputs.password,
+      });
+
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -29,7 +49,7 @@ const Register = () => {
             </div>
             <form
               className="w-full flex flex-col items-center justify-center mt-2 gap-4"
-              onSubmit={(e) => handleSubmit(e)}
+              onSubmit={handleSubmit}
             >
               <label className="input input-bordered w-full flex items-center gap-2 rounded-lg">
                 <svg
@@ -42,10 +62,11 @@ const Register = () => {
                 </svg>
                 <input
                   id="username"
+                  name="username"
                   type="text"
                   className="grow placeholder:text-gray-700"
                   placeholder="Username"
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={handleChange}
                 />
               </label>
               <label className="input input-bordered w-full flex items-center gap-2 rounded-lg">
@@ -60,10 +81,11 @@ const Register = () => {
                 </svg>
                 <input
                   id="email"
+                  name="email"
                   type="text"
                   className="grow placeholder:text-gray-700"
                   placeholder="Email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleChange}
                 />
               </label>
               <label className="input input-bordered w-full flex items-center gap-2 rounded-lg mb-4">
@@ -81,10 +103,11 @@ const Register = () => {
                 </svg>
                 <input
                   id="password"
+                  name="password"
                   type="password"
                   className="grow placeholder:text-gray-700"
                   placeholder="Password"
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handleChange}
                 />
               </label>
               <Button type={"submit"} width={"w-full"} message={"Register"} />
