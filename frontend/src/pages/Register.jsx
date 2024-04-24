@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { useEffect, useState } from "react";
-import { axiosInstance } from "../lib/axiosInstance";
+import toast, { Toaster } from "react-hot-toast";
+import { useRegister } from "../features/register/useRegister.js";
 
 const Register = () => {
   const [inputs, setInput] = useState({
@@ -10,6 +11,8 @@ const Register = () => {
     password: "",
   });
 
+  const { mutate, isSuccess } = useRegister();
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -17,16 +20,18 @@ const Register = () => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-
     try {
-      const user = await axiosInstance.post("/auth/register", {
-        username: inputs.username,
-        email: inputs.email,
-        password: inputs.password,
+      event.preventDefault();
+
+      mutate(inputs, {
+        onSuccess: (data) => {
+          toast.success(data.response.data.payload.message);
+          return navigate("/login");
+        },
+        onError: (data) => toast.error(data.response.data.payload.message),
       });
 
-      navigate("/login");
+      if (isSuccess) return navigate("/login");
     } catch (error) {
       console.log(error);
     }
@@ -39,6 +44,7 @@ const Register = () => {
   return (
     <>
       <main>
+        {isSuccess && navigate("/login")}
         <div className="h-screen flex items-center justify-center">
           <div className="w-full max-w-[450px] flex flex-col items-center justify-center gap-2">
             <div className="p-4 flex flex-col items-center justify-center">
@@ -123,6 +129,7 @@ const Register = () => {
             </p>
           </div>
         </div>
+        <Toaster />
       </main>
     </>
   );

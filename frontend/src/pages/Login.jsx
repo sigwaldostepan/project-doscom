@@ -1,37 +1,37 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import toast, { Toaster } from "react-hot-toast";
+import { useLogin } from "../features/login/useLogin";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [inputs, setInput] = useState({
-    username: "",
     email: "",
     password: "",
   });
+
+  const { mutate } = useLogin();
 
   const handleChange = (e) => {
     setInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-
     try {
-      const user = await axiosInstance.post("/auth/login", {
-        username: inputs.username,
-        email: inputs.email,
-        password: inputs.password,
-      });
+      event.preventDefault();
 
-      navigate("/");
+      mutate(inputs, {
+        onSuccess: (data) => navigate("/"),
+        onError: (data) => toast.error(data.response.data.payload.message),
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    document.getElementById("email").focus();
+    document.getElementById("username").focus();
   }, []);
 
   return (
@@ -45,7 +45,7 @@ const Login = () => {
             </div>
             <form
               className="w-full flex flex-col items-center justify-center mt-2 gap-4"
-              onSubmit={(e) => handleSubmit(e)}
+              onSubmit={handleSubmit}
             >
               <label className="input input-bordered w-full flex items-center gap-2 rounded-lg">
                 <svg
@@ -54,15 +54,15 @@ const Login = () => {
                   fill="currentColor"
                   className="w-4 h-4 opacity-70"
                 >
-                  <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-                  <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
+                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
                 </svg>
                 <input
-                  id="email"
+                  id="username"
+                  name="username"
                   type="text"
-                  className="grow"
-                  placeholder="Email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  className="grow placeholder:text-gray-700"
+                  placeholder="Username"
+                  onChange={handleChange}
                 />
               </label>
               <label className="input input-bordered w-full flex items-center gap-2 rounded-lg mb-4">
@@ -80,10 +80,11 @@ const Login = () => {
                 </svg>
                 <input
                   id="password"
+                  name="password"
                   type="password"
                   className="grow"
                   placeholder="Password"
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handleChange}
                 />
               </label>
               <Button type={"submit"} width={"w-full"} message={"Login"} />
@@ -99,6 +100,7 @@ const Login = () => {
             </p>
           </div>
         </div>
+        <Toaster />
       </main>
     </>
   );
