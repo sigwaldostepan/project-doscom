@@ -1,5 +1,6 @@
 const prisma = require("../lib/prisma");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
   try {
@@ -13,7 +14,7 @@ const register = async (req, res) => {
 
     if (userExist)
       return res.status(409).json({
-        data: {
+        payload: {
           status: "error",
           message: "User already exist",
         },
@@ -33,16 +34,16 @@ const register = async (req, res) => {
     });
 
     return res.status(200).json({
-      data: {
+      payload: {
         status: "ok",
         message: "User created",
         user, // Include the created user data
       },
     });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.log("Error creating user:", error);
     return res.status(500).json({
-      data: {
+      payload: {
         status: "error",
         message: "Internal server error",
       },
@@ -51,7 +52,8 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { email, username, password } = req.body;
+  const { username, password } = req.body;
+  console.log(req.body);
 
   // check user by username
   const user = await prisma.user.findFirst({
@@ -60,10 +62,11 @@ const login = async (req, res) => {
     },
   });
 
+  // if user not found return user not found response
   if (!user)
     return res.status(404).json({
-      data: {
-        status: error,
+      payload: {
+        status: "error",
         message: "User not found",
       },
     });
@@ -73,9 +76,23 @@ const login = async (req, res) => {
 
   if (!isPasswordCorrect)
     return res.status(400).json({
-      data: {
+      payload: {
         status: "error",
         message: "Incorrect password",
+      },
+    });
+
+  const token = jwt.sign(user.id, "jwtkey");
+
+  res
+    .cookie("acces_token", token, {
+      httpOnly: true,
+    })
+    .status(200)
+    .json({
+      payload: {
+        status: "ok",
+        message: "Login succes",
       },
     });
 };
