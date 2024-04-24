@@ -2,15 +2,54 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Button from "../components/Button";
+import { useMutation } from "@tanstack/react-query";
+import { axiosInstance } from "../lib/axiosInstance";
+import moment from "moment";
+import { useLocation } from "react-router-dom";
 
 const CreatePost = () => {
-  const [tags, setTags] = useState("");
-  const [value, setValue] = useState("");
+  const lcoation = useLocation();
+  const postId = location.pathname.split("/")[2];
 
-  const handleSubmit = (event) => {
+  const [desc, setDesc] = useState("");
+  const [title, setTitle] = useState("");
+  const [tags, setTags] = useState("");
+  const [img, setImg] = useState("");
+
+  const { mutate: createPost } = useMutation({
+    mutationFn: async () => {
+      return await axiosInstance.post("/posts", {
+        title,
+        desc,
+        tags,
+        img,
+        date: moment(Date.now().format("YYYY-MM-DD HH:mm:ss")),
+      });
+    },
+  });
+
+  const { mutate: editPost } = useMutation({
+    mutationFn: async () => {
+      return await axiosInstance.put(`/posts/${postId}`, {
+        title,
+        desc,
+        tags,
+        img,
+        date: moment(Date.now().format("YYYY-MM-DD HH:mm:ss")),
+      });
+    },
+  });
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log(tags);
+    return await axiosInstance.post("/posts", {
+      title,
+      desc,
+      tags,
+      img,
+      date: moment(Date.now().format("YYYY-MM-DD HH:mm:ss")),
+    });
   };
 
   return (
@@ -22,35 +61,33 @@ const CreatePost = () => {
               <div className="w-full max-w-[720px] flex flex-col gap-4">
                 <input
                   type="text"
-                  placeholder="Type here"
+                  placeholder="Enter title"
+                  onChange={(e) => setTitle(e)}
                   className="input input-bordered"
                 />
                 <ReactQuill
                   theme="snow"
-                  value={value}
-                  onChange={setValue}
+                  value={desc}
+                  onChange={setDesc}
                   className={`h-[300px] text-info rounded-md`}
                 />
               </div>
               <form
                 className="w-[360px] flex flex-col gap-4"
-                onSubmit={(e) => handleSubmit(e)}
+                onSubmit={handleSubmit}
               >
                 <div className="w-full p-4 flex flex-col gap-4 border border-gray-300">
-                  <h2>Publish</h2>
-                  <label
-                    className="underline underline-offset-2 cursor-pointer"
-                    htmlFor="image"
-                  >
-                    Upload image
+                  <h2 className="font-bold text-xl">Publish</h2>
+                  <label className="flex flex-col gap-2" htmlFor="image">
+                    Add image
+                    <input
+                      type="text"
+                      className="input input-bordered w-full max-w-xs"
+                      placeholder="Image url"
+                      onChange={(e) => setImg(e)}
+                    />
                   </label>
-                  <input
-                    type="file"
-                    id="image"
-                    name="tags"
-                    className="hidden"
-                  />
-                  <Button type={"submit"} message={"Update"} />
+                  <Button type={"submit"} message={"Publish"} />
                 </div>
                 <div className="w-full p-4 flex flex-col gap-4 border border-gray-300">
                   <h2 className="font-bold text-2xl">Tags</h2>
@@ -62,6 +99,7 @@ const CreatePost = () => {
                         id="sport"
                         name="tags"
                         className="radio"
+                        onChange={(e) => setTags(e)}
                       />
                       <label htmlFor="sport" className="text-base">
                         Sport
@@ -72,36 +110,39 @@ const CreatePost = () => {
                     <input
                       value="radio"
                       type="radio"
-                      id="foods"
+                      id="technology"
                       name="tags"
                       className="radio"
+                      onChange={(e) => setTags(e)}
                     />
-                    <label htmlFor="foods" className="text-base">
-                      Foods
+                    <label htmlFor="technology" className="text-base">
+                      Technology
                     </label>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
                       value="radio"
                       type="radio"
-                      id="movies"
+                      id="food"
                       name="tags"
                       className="radio"
+                      onChange={(e) => setTags(e)}
                     />
-                    <label htmlFor="movies" className="text-base">
-                      Movies
+                    <label htmlFor="food" className="text-base">
+                      Food
                     </label>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
-                      value="technology"
+                      value="financial"
                       type="radio"
-                      id="technology"
+                      id="financial"
                       name="tags"
                       className="radio"
+                      onChange={(e) => setTags(e)}
                     />
-                    <label htmlFor="technology" className="text-base">
-                      Technology
+                    <label htmlFor="financial" className="text-base">
+                      Financial
                     </label>
                   </div>
                 </div>

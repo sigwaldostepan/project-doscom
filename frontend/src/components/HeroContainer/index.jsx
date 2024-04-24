@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Button from "../Button";
 import { Link } from "react-router-dom";
 
-const HeroContent = ({ img, title, description }) => {
+const HeroContent = ({ link, img, title, description }) => {
   const [overlay, setOverlay] = useState(true);
 
   const handleOverlay = () => {
@@ -10,7 +10,8 @@ const HeroContent = ({ img, title, description }) => {
   };
 
   return (
-    <div
+    <Link
+      to={link}
       className="hero-content max-w-[900px] relative flex-col gap-12 rounded-xl transition-all lg:flex-row hover:-translate-y-1 hover:shadow-lg after:absolute after:contents after:bg-violet-600 even:flex-row-reverse"
       onMouseEnter={handleOverlay}
       onMouseLeave={handleOverlay}
@@ -27,13 +28,11 @@ const HeroContent = ({ img, title, description }) => {
         ></div>
       </div>
       <div>
-        <Link to={"/post/2342"}>
-          <h1 className="text-5xl font-bold">{title}</h1>
-        </Link>
+        <h1 className="text-5xl font-bold">{title}</h1>
         <p className="py-6">{description}</p>
         <Button type={"button"} message={"Read more"} />
       </div>
-    </div>
+    </Link>
   );
 };
 

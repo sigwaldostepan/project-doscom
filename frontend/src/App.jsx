@@ -13,6 +13,7 @@ import Register from "./pages/Register.jsx";
 import Home from "./pages/Home.jsx";
 import Post from "./pages/Post.jsx";
 import CreatePost from "./pages/CreatePost.jsx";
+import { AuthContextProvider } from "./context/authContext.jsx";
 
 const Layout = () => {
   return (
@@ -33,11 +34,15 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/post/:title",
+        path: "/post/:id",
         element: <Post />,
       },
       {
-        path: "/write/",
+        path: "/write",
+        element: <CreatePost />,
+      },
+      {
+        path: "/write/:id",
         element: <CreatePost />,
       },
     ],
@@ -58,7 +63,9 @@ const App = () => {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <AuthContextProvider>
+          <RouterProvider router={router} />
+        </AuthContextProvider>
       </QueryClientProvider>
     </>
   );

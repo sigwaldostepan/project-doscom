@@ -1,4 +1,5 @@
 const prisma = require("../lib/prisma");
+const dotenv = require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -29,7 +30,7 @@ const register = async (req, res) => {
       data: {
         email,
         username,
-        password: hash, // Store the hashed password
+        password: hash,
       },
     });
 
@@ -37,7 +38,7 @@ const register = async (req, res) => {
       payload: {
         status: "ok",
         message: "User created",
-        user, // Include the created user data
+        user,
       },
     });
   } catch (error) {
@@ -84,20 +85,32 @@ const login = async (req, res) => {
 
   const token = jwt.sign(user.id, "jwtkey");
 
-  res
-    .cookie("acces_token", token, {
-      httpOnly: true,
+  res.cookie("accessToken", token, {
+    httpOnly: true,
+  });
+
+  return res.status(200).send({
+    payload: {
+      status: "ok",
+      message: "Login success",
+    },
+  });
+};
+
+const logout = (req, res) => {
+  return res
+    .clearCookie("accesstoken", {
+      sameSite: "none",
+      secure: true,
     })
     .status(200)
     .json({
       payload: {
         status: "ok",
-        message: "Login succes",
+        message: "User logged out",
       },
     });
 };
-
-const logout = (req, res) => {};
 
 module.exports = {
   register,

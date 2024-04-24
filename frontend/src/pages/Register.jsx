@@ -24,8 +24,7 @@ const Register = () => {
       event.preventDefault();
 
       mutate(inputs, {
-        onSuccess: (data) => {
-          toast.success(data.response.data.payload.message);
+        onSuccess: () => {
           return navigate("/login");
         },
         onError: (data) => toast.error(data.response.data.payload.message),

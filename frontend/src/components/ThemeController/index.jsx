@@ -12,7 +12,7 @@ const ThemeController = () => {
   }, [theme]);
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center btn btn-circle btn-ghost btn-sm">
       <label className="swap swap-rotate">
         <input
           type="checkbox"

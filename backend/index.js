@@ -1,19 +1,22 @@
 const express = require("express");
+const dotenv = require("dotenv").config();
 const authRoutes = require("./routes/auth.js");
+const postsRoutes = require("./routes/posts.js");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const app = express();
-const port = 7000;
+const port = process.env.PORT;
 
-app.use(cors());
-app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(cors());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/posts", postsRoutes);
 
 app.get("/", (req, res) => {
-  res.send("connected");
+  res.send("Connected");
 });
 
 app.listen(port, () => {

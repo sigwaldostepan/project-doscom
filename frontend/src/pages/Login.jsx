@@ -1,17 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { AuthContext } from "../context/authContext";
 import { useLogin } from "../features/login/useLogin";
 
 const Login = () => {
-  const navigate = useNavigate();
   const [inputs, setInput] = useState({
     email: "",
     password: "",
   });
 
+  const navigate = useNavigate();
+
   const { mutate } = useLogin();
+
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -21,8 +25,10 @@ const Login = () => {
     try {
       event.preventDefault();
 
+      login(inputs);
+
       mutate(inputs, {
-        onSuccess: (data) => navigate("/"),
+        onSuccess: () => navigate("/"),
         onError: (data) => toast.error(data.response.data.payload.message),
       });
     } catch (error) {
