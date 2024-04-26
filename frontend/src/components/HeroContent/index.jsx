@@ -24,7 +24,7 @@ const HeroContent = ({ link, img, title, description }) => {
         <div
           className={`absolute ${
             overlay ? "-top-5 -left-5" : "top-0 left-0"
-          } -z-50 w-[300px] h-[300px] bg-violet-700 rounded-md transition-all`}
+          } -z-50 w-[300px] h-[300px] bg-primary rounded-md transition-all`}
         ></div>
       </div>
       <div>

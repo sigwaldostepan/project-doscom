@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.hero-landing-page {
+  background-image: url("./assets/landing_page.svg");
+}

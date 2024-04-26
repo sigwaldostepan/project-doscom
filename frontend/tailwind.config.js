@@ -10,7 +10,7 @@ export default {
         lightMode: {
           primary: "#a855f7",
           secondary: "#9333ea",
-          accent: "#6d28d9",
+          accent: "#EDE9FE",
           neutral: "#DDDDDD",
           "base-100": "#f3f4f6",
           info: "#000000",
@@ -20,8 +20,8 @@ export default {
         },
         darkMode: {
           primary: "#9333ea",
-          secondary: "#323232",
-          accent: "#00ffff",
+          secondary: "#7C3AED",
+          accent: "#fff",
           neutral: "#303030",
           "base-100": "#252525",
           info: "#ffffff",

@@ -13,7 +13,7 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const { mutate } = useLogin();
+  const { mutate: userLogin } = useLogin();
 
   const { login } = useContext(AuthContext);
 
@@ -27,7 +27,7 @@ const Login = () => {
 
       login(inputs);
 
-      mutate(inputs, {
+      userLogin(inputs, {
         onSuccess: () => navigate("/"),
         onError: (data) => toast.error(data.response.data.payload.message),
       });
@@ -66,7 +66,7 @@ const Login = () => {
                   id="username"
                   name="username"
                   type="text"
-                  className="grow placeholder:text-gray-700"
+                  className="grow"
                   placeholder="Username"
                   onChange={handleChange}
                 />

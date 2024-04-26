@@ -1,10 +1,9 @@
 const prisma = require("../lib/prisma");
-const jwt = require("jsonwebtoken");
 
 const getPosts = async (req, res) => {
   try {
     const tags = req.query.tags;
-    console.log(tags);
+
     const posts = tags
       ? await prisma.post.findMany({
           where: {
@@ -20,15 +19,13 @@ const getPosts = async (req, res) => {
       },
     });
   } catch (error) {
-    res.send(error);
+    res.json(error);
   }
 };
 
 const getPostById = async (req, res) => {
   try {
     const id = req.params.id;
-
-    console.log(id);
 
     const post = await prisma.post.findUnique({
       where: { id },
@@ -47,8 +44,6 @@ const getPostById = async (req, res) => {
       },
     });
 
-    console.log(post);
-
     res.status(200).json({
       payload: {
         status: "ok",
@@ -56,11 +51,76 @@ const getPostById = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json(error);
   }
 };
 
-const editPost = (req, res) => {};
+const createPost = async (req, res) => {
+  const { title, desc, tags, img, date, username } = req.body;
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  await prisma.post.create({
+    data: {
+      title,
+      desc,
+      tags,
+      img,
+      date,
+      userId: user.id,
+    },
+  });
+
+  return res.status(200).json({
+    payload: {
+      status: "ok",
+      message: "post created",
+    },
+  });
+};
+
+const editPost = async (req, res) => {
+  try {
+    const { title, desc, tags, img, username } = req.body;
+    const id = req.params.id;
+    const user = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    await prisma.post.update({
+      where: {
+        id,
+      },
+      data: {
+        title,
+        desc,
+        tags,
+        img,
+        userId: user.id,
+      },
+    });
+
+    return res.status(200).json({
+      payload: {
+        status: "ok",
+        message: "post created",
+      },
+    });
+  } catch (error) {
+    res.json(error);
+  }
+};
 
 const deletePost = async (req, res) => {
   const id = req.params.id;
@@ -74,25 +134,6 @@ const deletePost = async (req, res) => {
       status: "ok",
       message: "Post deleted",
     },
-  });
-};
-
-const createPost = async (req, res) => {
-  const { title, desc, tags, img, date } = req.body;
-
-  const response = await prisma.post.create({
-    data: {
-      title,
-      desc,
-      tags,
-      img,
-      date,
-    },
-  });
-
-  return res.status(200).json({
-    status: "ok",
-    message: "post created",
   });
 };
 

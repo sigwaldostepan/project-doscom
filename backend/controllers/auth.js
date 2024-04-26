@@ -2,18 +2,15 @@ const prisma = require("../lib/prisma");
 const dotenv = require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { findUser, createUser } = require("./users");
 
 const register = async (req, res) => {
   try {
     const { email, username, password } = req.body;
 
-    const userExist = await prisma.user.findFirst({
-      where: {
-        OR: [{ username }, { email }],
-      },
-    });
+    const userExist = findUser(username, email);
 
-    if (userExist)
+    if (!userExist)
       return res.status(409).json({
         payload: {
           status: "error",
@@ -26,13 +23,7 @@ const register = async (req, res) => {
     const hash = bcrypt.hashSync(password, salt);
 
     // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        username,
-        password: hash,
-      },
-    });
+    const user = await createUser(email, username, hash);
 
     return res.status(200).json({
       payload: {

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { useEffect, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useRegister } from "../features/register/useRegister.js";
 
 const Register = () => {
@@ -27,7 +27,7 @@ const Register = () => {
         onSuccess: () => {
           return navigate("/login");
         },
-        onError: (data) => toast.error(data.response.data.payload.message),
+        onError: (data) => console.log(data),
       });
 
       if (isSuccess) return navigate("/login");

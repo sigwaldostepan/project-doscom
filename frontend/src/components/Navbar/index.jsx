@@ -2,14 +2,20 @@ import { Link } from "react-router-dom";
 import ThemeController from "../ThemeController";
 import { AuthContext } from "../../context/authContext";
 import { useContext } from "react";
+import NotifyToast from "../NotifyToast";
+import LogoutConfirm from "../LogoutConfirm";
 
 const Navbar = () => {
-  const { currentUser, logout } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
+
   return (
     <>
       <nav className="sticky w-full top-0 left-0 z-[999] px-6 py-4 bg-transparent shadow backdrop-blur-[10px]">
         <div className="flex items-center justify-between font-semibold">
-          <h1>Logo</h1>
+          <Link to="/" className="font-bold text-2xl">
+            Go
+            <span className="text-violet-500">lb</span>
+          </Link>
           <div className="flex items-center justify-between gap-4">
             <div className="dropdown dropdown-end">
               <div
@@ -17,7 +23,7 @@ const Navbar = () => {
                 role="button"
                 className="btn btn-ghost rounded-btn"
               >
-                Dropdown
+                Category
               </div>
               <ul
                 tabIndex={0}
@@ -41,9 +47,14 @@ const Navbar = () => {
               Write
             </Link>
             {currentUser ? (
-              <a className="btn btn-ghost" onClick={logout}>
+              <button
+                className="btn btn-ghost"
+                onClick={() =>
+                  document.getElementById("confirm-logout").showModal()
+                }
+              >
                 Logout
-              </a>
+              </button>
             ) : (
               <Link className="btn btn-ghost" to="/login">
                 Login
@@ -52,6 +63,8 @@ const Navbar = () => {
             <ThemeController />
           </div>
         </div>
+        <NotifyToast />
+        <LogoutConfirm />
       </nav>
     </>
   );

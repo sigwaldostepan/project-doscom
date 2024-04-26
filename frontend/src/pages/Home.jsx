@@ -1,10 +1,13 @@
-import HeroContent from "../components/HeroContainer";
+import HeroContent from "../components/HeroContent";
 import { useLocation } from "react-router-dom";
 import useFetchPosts from "../features/posts/useFetchPosts";
+import { useEffect } from "react";
+import convertTags from "../lib/convertTags";
 
 const Home = () => {
   const tags = useLocation().search;
-  const { data: posts, isLoading, refetch } = useFetchPosts(tags);
+
+  const { data: posts, isLoading } = useFetchPosts(tags);
 
   const renderPosts = () => {
     return posts?.data.payload.response?.map((data) => {
@@ -18,6 +21,13 @@ const Home = () => {
       );
     });
   };
+
+  useEffect(() => {
+    const title = convertTags(tags);
+    document.title = `Glob - ${title} Articles`;
+  }, [tags]);
+
+  console.log(posts);
 
   return (
     <>

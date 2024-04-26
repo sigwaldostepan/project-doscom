@@ -1,54 +1,52 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Button from "../components/Button";
-import { useMutation } from "@tanstack/react-query";
-import { axiosInstance } from "../lib/axiosInstance";
 import moment from "moment";
-import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import useCreatePost from "../features/posts/useCreatePost";
+import { AuthContext } from "../context/authContext";
+import toast from "react-hot-toast";
+import isDataEmpty from "../lib/isDataEmpty";
+import NotifyToast from "../components/NotifyToast";
 
 const CreatePost = () => {
-  const lcoation = useLocation();
-  const postId = location.pathname.split("/")[2];
-
-  const [desc, setDesc] = useState("");
   const [title, setTitle] = useState("");
-  const [tags, setTags] = useState("");
+  const [desc, setDesc] = useState("");
   const [img, setImg] = useState("");
+  const [tags, setTags] = useState("");
 
-  const { mutate: createPost } = useMutation({
-    mutationFn: async () => {
-      return await axiosInstance.post("/posts", {
-        title,
-        desc,
-        tags,
-        img,
-        date: moment(Date.now().format("YYYY-MM-DD HH:mm:ss")),
-      });
-    },
-  });
+  const { currentUser } = useContext(AuthContext);
 
-  const { mutate: editPost } = useMutation({
-    mutationFn: async () => {
-      return await axiosInstance.put(`/posts/${postId}`, {
-        title,
-        desc,
-        tags,
-        img,
-        date: moment(Date.now().format("YYYY-MM-DD HH:mm:ss")),
-      });
-    },
-  });
+  const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
+  const { mutate: createPost } = useCreatePost();
+
+  const handleSubmit = (event) => {
     event.preventDefault();
-
-    return await axiosInstance.post("/posts", {
-      title,
+    const data = {
+      title: title?.target?.value,
       desc,
-      tags,
-      img,
-      date: moment(Date.now().format("YYYY-MM-DD HH:mm:ss")),
+      img: img?.target?.value,
+      tags: tags?.target?.name,
+      date: moment(Date.now()).toISOString(),
+      username: currentUser.username,
+    };
+
+    const hasNull = isDataEmpty(data);
+
+    // check if data field empty return error, check if user not logged in return error
+    if (hasNull) return toast.error("Please fill all field!");
+    if (!currentUser) return toast.error("Login first!");
+
+    createPost(data, {
+      onSuccess: () => {
+        toast.success("Post created!");
+
+        return setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      },
     });
   };
 
@@ -63,33 +61,33 @@ const CreatePost = () => {
                   type="text"
                   placeholder="Enter title"
                   onChange={(e) => setTitle(e)}
-                  className="input input-bordered"
+                  className="input input-bordered border-gray-300"
                 />
                 <ReactQuill
                   theme="snow"
                   value={desc}
                   onChange={setDesc}
-                  className={`h-[300px] text-info rounded-md`}
+                  className={`h-[300px] text-info`}
                 />
               </div>
               <form
                 className="w-[360px] flex flex-col gap-4"
                 onSubmit={handleSubmit}
               >
-                <div className="w-full p-4 flex flex-col gap-4 border border-gray-300">
+                <div className="w-full p-4 flex flex-col gap-4 border border-gray-300 rounded-md">
                   <h2 className="font-bold text-xl">Publish</h2>
                   <label className="flex flex-col gap-2" htmlFor="image">
                     Add image
                     <input
                       type="text"
-                      className="input input-bordered w-full max-w-xs"
+                      className="input input-bordered w-full max-w-xs border-gray-300"
                       placeholder="Image url"
                       onChange={(e) => setImg(e)}
                     />
                   </label>
                   <Button type={"submit"} message={"Publish"} />
                 </div>
-                <div className="w-full p-4 flex flex-col gap-4 border border-gray-300">
+                <div className="w-full p-4 flex flex-col gap-4 border border-gray-300 rounded-md">
                   <h2 className="font-bold text-2xl">Tags</h2>
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-2">
@@ -150,6 +148,7 @@ const CreatePost = () => {
             </div>
           </div>
         </div>
+        <NotifyToast />
       </main>
     </>
   );

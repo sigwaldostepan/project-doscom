@@ -1,32 +1,43 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import moment from "moment";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { AuthContext } from "../context/authContext";
-import { Link, useLocation } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "../lib/axiosInstance";
+import { useLocation, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import useFetchPost from "../features/posts/useFetchPost";
+import NotifyToast from "../components/NotifyToast";
+import useDeletePost from "../features/posts/useDeletePost";
 
 const Post = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const postId = location.pathname.split("/")[2];
 
   const { currentUser } = useContext(AuthContext);
 
-  const { data: post } = useQuery({
-    queryKey: [postId, "posts"],
-    queryFn: async () => {
-      return await axiosInstance.get(`/posts/${postId}`);
-    },
-  });
-  const { mutate } = useMutation({
-    mutationFn: async (id) => {
-      return await axiosInstance.delete(`/posts/${id}`);
-    },
-  });
+  const { data: post } = useFetchPost(postId);
+
+  const { mutate: deletePost } = useDeletePost();
 
   const handleDelete = async (id) => {
-    mutate(id);
+    try {
+      deletePost(id, {
+        onSuccess: () => {
+          toast.success("Post deleted");
+
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
+        },
+      });
+    } catch (error) {
+      toast.error(error);
+    }
   };
+
+  useEffect(() => {
+    document.title = post?.data.payload.response.title;
+  }, []);
 
   return (
     <>
@@ -41,17 +52,21 @@ const Post = () => {
                 <p className="font-semibold">
                   {post?.data.payload.response.user.username}
                 </p>
-                <p>{moment(post?.data.payload.response.date).fromNow()}</p>
+                <p>
+                  Posted {moment(post?.data.payload.response.date).fromNow()}
+                </p>
               </div>
               {currentUser?.username ===
                 post?.data.payload.response.user.username && (
                 <div>
-                  <Link
-                    to={`edit/${post?.data.payload.response.id}`}
+                  <button
+                    onClick={() =>
+                      navigate(`/edit/${post.data.payload.response.id}`)
+                    }
                     className="btn btn-ghost btn-circle btn-xs"
                   >
                     <FaEdit size={16} />
-                  </Link>
+                  </button>
                   <button
                     onClick={() => handleDelete(postId)}
                     className="btn btn-ghost btn-circle btn-xs"
@@ -65,9 +80,12 @@ const Post = () => {
               className="w-full max-w-[600px]"
               src={post?.data.payload.response.img}
             />
-            <p className="text-left leading-5">
-              {post?.data.payload.response.desc}
-            </p>
+            <p
+              className="text-left leading-5"
+              dangerouslySetInnerHTML={{
+                __html: post?.data.payload.response.desc,
+              }}
+            ></p>
 
             <div className="mt-6 flex items-center gap-6">
               <p className="text-lg">Tags</p>
@@ -80,6 +98,7 @@ const Post = () => {
             </div>
           </div>
         </div>
+        <NotifyToast />
       </main>
     </>
   );
