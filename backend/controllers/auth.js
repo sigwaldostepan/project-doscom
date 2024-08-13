@@ -8,9 +8,11 @@ const register = async (req, res) => {
   try {
     const { email, username, password } = req.body;
 
-    const userExist = findUser(username, email);
+    const userExist = await findUser(username, email);
 
-    if (!userExist)
+    console.log(userExist);
+
+    if (userExist)
       return res.status(409).json({
         payload: {
           status: "error",
@@ -76,24 +78,26 @@ const login = async (req, res) => {
 
   const token = jwt.sign(user.id, "jwtkey");
 
-  res.cookie("accessToken", token, {
+  res.cookie("accessToken", {
     httpOnly: true,
+    accessToken: token,
   });
 
   return res.status(200).send({
     payload: {
       status: "ok",
       message: "Login success",
+      user: {
+        email: user.email,
+        username: user.username,
+      },
     },
   });
 };
 
 const logout = (req, res) => {
   return res
-    .clearCookie("accesstoken", {
-      sameSite: "none",
-      secure: true,
-    })
+    .clearCookie("accessToken")
     .status(200)
     .json({
       payload: {

@@ -1,11 +1,11 @@
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Button from "../components/Button";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import useCreatePost from "../features/posts/useCreatePost";
-import { AuthContext } from "../context/authContext";
+import { useAuth } from "../context/authContext";
 import toast from "react-hot-toast";
 import isDataEmpty from "../lib/isDataEmpty";
 import NotifyToast from "../components/NotifyToast";
@@ -16,7 +16,7 @@ const CreatePost = () => {
   const [img, setImg] = useState("");
   const [tags, setTags] = useState("");
 
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser } = useAuth();
 
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ const CreatePost = () => {
       title: title?.target?.value,
       desc,
       img: img?.target?.value,
-      tags: tags?.target?.name,
+      tags: tags?.target?.id,
       date: moment(Date.now()).toISOString(),
       username: currentUser.username,
     };
@@ -49,6 +49,12 @@ const CreatePost = () => {
       },
     });
   };
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/login");
+    }
+  }, []);
 
   return (
     <>

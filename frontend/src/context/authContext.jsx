@@ -1,15 +1,16 @@
 import { axiosInstance } from "../lib/axiosInstance";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(
-    JSON.parse(localStorage.getItem("user")) || null
-  );
+  const [currentUser, setCurrentUser] = useState(null);
 
   const login = async (inputs) => {
-    setCurrentUser(inputs);
+    const { data } = await axiosInstance.post("/auth/login", inputs);
+    console.log(data);
+
+    setCurrentUser(data.payload.user);
   };
 
   const logout = async () => {
@@ -17,13 +18,11 @@ export const AuthContextProvider = ({ children }) => {
     await axiosInstance.post("/auth/logout");
   };
 
-  useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(currentUser));
-  }, [currentUser]);
-
   return (
     <AuthContext.Provider value={{ currentUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

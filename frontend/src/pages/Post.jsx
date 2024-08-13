@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import moment from "moment";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { AuthContext } from "../context/authContext";
@@ -34,10 +34,6 @@ const Post = () => {
       toast.error(error);
     }
   };
-
-  useEffect(() => {
-    document.title = post?.data.payload.response.title;
-  }, []);
 
   return (
     <>

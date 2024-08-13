@@ -7,7 +7,7 @@ import convertTags from "../lib/convertTags";
 const Home = () => {
   const tags = useLocation().search;
 
-  const { data: posts, isLoading } = useFetchPosts(tags);
+  const { data: posts } = useFetchPosts(convertTags(tags));
 
   const renderPosts = () => {
     return posts?.data.payload.response?.map((data) => {
@@ -26,8 +26,6 @@ const Home = () => {
     const title = convertTags(tags);
     document.title = `Glob - ${title} Articles`;
   }, [tags]);
-
-  console.log(posts);
 
   return (
     <>
